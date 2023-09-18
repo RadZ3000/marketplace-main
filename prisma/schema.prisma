@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Listing {
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  collectionId       String     @db.Text
+  tokenId            String     @db.Text
+  providerNetwork    String     @db.Text
+  providerListingId  String     @db.Text
+  providerContractId String     @db.Text
+  provider           String     @db.Text
+  name               String     @db.Text
+  image              String?    @db.Text
+  creatorAddress     String     @db.Text
+  amountText         String     @db.Text
+  currency           String     @db.Text
+  type               String     @db.Text
+  startTime          DateTime   @db.Timestamptz(6)
+  endTime            DateTime?  @db.Timestamptz(6)
+  quantity           BigInt     @db.BigInt
+  cancelledAt        DateTime?  @db.Timestamptz(6)
+  fulfilledAt        DateTime?  @db.Timestamptz(6)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  Activity           Activity[]
+
+  @@unique([providerNetwork, providerListingId, providerContractId, provider], map: "listing_provider_idx")
+  @@index([collectionId, tokenId], map: "listing_collection_token_idx")
+}
+
+model Activity {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  collectionId  String   @db.Text
+  tokenId       String   @db.Text
+  listingId     String   @db.Uuid
+  type          String   @db.Text
+  fromAddress   String   @db.Text
+  toAddress     String   @db.Text
+  amountText    String   @db.Text
+  currency      String   @db.Text
+  transactionId String   @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([collectionId, tokenId], map: "activity_collection_token_idx")
+}
+
+model WalletTokenActivity {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  collectionId  String   @db.Text
+  tokenId       String   @db.Text
+  walletAddress String   @db.Text
+  like          Boolean  @db.Boolean
+  views         BigInt   @db.BigInt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([collectionId, tokenId, walletAddress], map: "collection_token_wallet_activity_idx")
+}

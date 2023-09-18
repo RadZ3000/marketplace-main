@@ -1,0 +1,12 @@
+@font-face {
+  font-family: "Sweet Sans Pro";
+  src: url("/fonts/sweet-sans-pro.ttf");
+}
+
+@font-face {
+  font-family: "Sweet Sans Pro";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/sweet-sans-pro-bold.ttf");
+}
